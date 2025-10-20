@@ -3,5 +3,6 @@
 *.pot
 *.pyc
 __pycache__
+project/local_settings.py
 db.sqlite3
 media
