@@ -1,0 +1,3 @@
+usuario - username , password , email
+
+evento (tarefa) - Nome_da_tarefa, data_da_tarefa , data_limite , lugar , pessoa a ser , tipo_de_problema , solucao  
