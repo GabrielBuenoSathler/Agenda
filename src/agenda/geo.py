@@ -45,9 +45,5 @@ def get_coordinates(city):
     else:
         print(f"Could not find coordinates for {city}")
 
-lat_long = get_coordinates("Paris")
-lat = lat_long[0]
-long = lat_long [1]
-print(lat)
-print (long)
+
 
