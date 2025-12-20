@@ -1,5 +1,4 @@
 from geopy.geocoders import Nominatim
-import ssl
 
 # Optional: Bypassing SSL verification for some environments
 # context = ssl.create_default_context()

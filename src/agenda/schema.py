@@ -1,18 +1,18 @@
 from pydantic  import BaseModel , EmailStr
-import datetime 
-
+from datetime import date, datetime, time, timedelta
 class UserPublic(BaseModel):
     id : int 
     cidade : str
     username : str
     email : EmailStr
-    password : str 
+    password : str
+    lat : float
+    long : float 
 
 
 class UserSchema(BaseModel):
     email : str
     username : str
-    cidade : str
 
 
 class EventoPublic(BaseModel):
@@ -26,6 +26,17 @@ class EventoPublic(BaseModel):
     usuario_atendimento : str  
     solucao : str 
 
+class CidadeSchema(BaseModel): 
+    cidade_nome : str
+    lat : float
+    long : float 
+      
+
+class CidadePublic(BaseModel):
+    id_cidade : int 
+    cidade_nome : str
+    long : float
+    lat : float 
 
 class EventoSchema(BaseModel): 
     problema : str

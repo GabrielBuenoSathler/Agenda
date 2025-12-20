@@ -45,25 +45,17 @@ class Evento:
 
 
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@mapped_as_dataclass(table_registry)                                       
+class Cidade:                                                              
+    __tablename__ = "Cidade"                                               
+    id_cidade : Mapped[int] = mapped_column (init = False , primary_key=True)
+    cidade_nome : Mapped[str]  
+    lat : Mapped[float]
+    long : Mapped[float]
+                                                                           
+                                                                           
+                                                                           
+                                                                           
 
 
 
