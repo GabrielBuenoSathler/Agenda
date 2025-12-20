@@ -3,15 +3,16 @@ import datetime
 
 class UserPublic(BaseModel):
     id : int 
+    cidade : str
     username : str
     email : EmailStr
     password : str 
 
 
 class UserSchema(BaseModel):
-    email : str 
+    email : str
     username : str
-    password : str
+    cidade : str
 
 
 class EventoPublic(BaseModel):
