@@ -7,7 +7,10 @@ from .schema import (
 from .geo import get_coordinates
 from .models  import Cidade
 from sqlalchemy.orm import Session
-from .database import get_session 
+from .database import get_session
+
+from fastapi import HTTPException
+
 
 app = FastAPI()
 

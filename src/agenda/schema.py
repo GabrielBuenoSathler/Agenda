@@ -1,5 +1,5 @@
 from pydantic  import BaseModel , EmailStr
-from datetime import date, datetime, time, timedelta
+from datetime import datetime
 class UserPublic(BaseModel):
     id : int 
     cidade : str
