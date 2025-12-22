@@ -206,7 +206,7 @@ cython_debug/
 database.db 
 # PyPI configuration file
 .pypirc
-
+todo.txt
 # Marimo
 marimo/_static/
 marimo/_lsp/
