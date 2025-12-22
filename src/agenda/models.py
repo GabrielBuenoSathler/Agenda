@@ -15,7 +15,6 @@ class User:
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
-    cidade : Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
     created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
@@ -25,6 +24,11 @@ class User:
         cascade='all, delete-orphan',
         lazy='selectin',
     )
+    Cidade: Mapped[list['Cidade']] = relationship(  
+         init=False,                                 
+         cascade='all, delete-orphan',               
+         lazy='selectin',                            
+     )                                               
 
     
 @mapped_as_dataclass(table_registry)
@@ -47,7 +51,8 @@ class Evento:
     
 @mapped_as_dataclass(table_registry)                                       
 class Cidade:                                                              
-    __tablename__ = "Cidade"                                               
+    __tablename__ = "Cidade" 
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False) 
     id_cidade : Mapped[int] = mapped_column (init = False , primary_key=True)
     cidade_nome : Mapped[str]  
     lat : Mapped[float]

@@ -1,16 +1,28 @@
 from fastapi import FastAPI, Depends
 from .schema import (
     CidadeSchema,
-    CidadePublic
+    CidadePublic,
+    UserPublic,
+    UserSchema,
+    Token ,
 
 )
+from fastapi.security import OAuth2PasswordRequestForm
 from .geo import get_coordinates
-from .models  import Cidade
+from .models  import Cidade, User 
 from sqlalchemy.orm import Session
+from sqlalchemy import select 
 from .database import get_session
 
 from fastapi import HTTPException
+from .security import (
+    get_current_user,
+    get_password_hash,
+    verify_password,
+    create_access_token
+)
 
+from http import HTTPStatus
 
 app = FastAPI()
 
@@ -22,9 +34,48 @@ def root():
 #@app.get("/lista_cidade" , responseModel=CidadePublic)
 #def lista_cidade(Cidade: CidadeSchema, session: Session = Depends(get_session)):
 #    pass
+#
+#
+#
+
+
+@app.post('/users/', status_code=HTTPStatus.CREATED, response_model=UserPublic)                                                               
+def create_user(user: UserSchema, session: Session = Depends(get_session)):                                                                   
+                                                                                                                                              
+                                                                                                                                              
+    db_user = session.scalar(                                                                                                                 
+        select(User).where(                                                                                                                   
+            (User.username == user.username) | (User.email == user.email)                                                                     
+                                                                                                                                              
+        )                                                                                                                                     
+    )                                                                                                                                         
+                                                                                                                                              
+    if db_user:                                                                                                                               
+        if db_user.username == user.username:                                                                                                 
+                                                                                                                                              
+                                                                                                                                              
+            raise HTTPException(                                                                                                              
+                status_code=HTTPStatus.CONFLICT,                                                                                              
+                detail='Username already exists',                                                                                             
+            )                                                                                                                                 
+        elif db_user.email == user.email:                                                                                                     
+            raise HTTPException(                                                                                                              
+                status_code=HTTPStatus.CONFLICT,                                                                                              
+                detail='Email already exists',                                                                                                
+            )                                                                                                                                 
+                                                                                                                                              
+    db_user = User(                                                                                                                           
+        username=user.username, password=get_password_hash(user.password), email=user.email                                                   
+    )                                                                                                                                         
+    session.add(db_user)                                                                                                                      
+    session.commit()                                                                                                                          
+    session.refresh(db_user)                                                                                                                  
+                                                                                                                                              
+    return db_user
 
 @app.post("/add_cidade" , response_model=CidadePublic)                             
-def adiciona_cidade(cidade: CidadeSchema, session: Session = Depends(get_session)):
+def adiciona_cidade(cidade: CidadeSchema, session: Session = Depends(get_session),
+                    current_user: User = Depends(get_current_user)):
     #db_cidade = Cidade(cidade_nome =cidade.cidade_nome,lat = cidade.lat, long = cidade.long)
     print(cidade)
     latitute,longitude  = get_coordinates(cidade.cidade_nome)
@@ -70,3 +121,31 @@ def deleta_cidade(
     session.commit()
 
     return db_cidade
+
+
+@app.post('/token', response_model=Token)
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+
+
+    session: Session = Depends(get_session),
+):
+    user = session.scalar(select(User).where(User.email == form_data.username)) 
+
+
+    if not user:
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            detail='Incorrect email or password'
+        )
+
+    if not verify_password(form_data.password, user.password):
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            detail='Incorrect email or password'
+        )
+
+    access_token = create_access_token(data={'sub': user.email})
+
+    return {'access_token': access_token, 'token_type': 'bearer'}
+

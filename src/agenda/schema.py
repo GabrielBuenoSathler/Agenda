@@ -2,17 +2,19 @@ from pydantic  import BaseModel , EmailStr
 from datetime import datetime
 class UserPublic(BaseModel):
     id : int 
-    cidade : str
     username : str
     email : EmailStr
     password : str
-    lat : float
-    long : float 
+ 
 
+class Token(BaseModel):
+     access_token: str
+     token_type: str
 
 class UserSchema(BaseModel):
     email : str
     username : str
+    password : str
 
 
 class EventoPublic(BaseModel):

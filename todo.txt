@@ -1,0 +1,152 @@
+BACKLOG DE TAREFAS – API COM AUTENTICAÇÃO, POSTGRESQL E CRUD
+
+1. Criar autenticação de usuário
+1.1 Modelagem de usuário
+- Criar tabela/model User
+- Campos: id, name, email, password_hash, created_at, updated_at
+- Garantir email único
+- Não armazenar senha em texto puro
+--------------------------------------------------------------------------------------------> FEITO 
+
+1.2 Criptografia de senha
+- Implementar hash de senha (bcrypt/argon2)
+- Função para gerar hash
+- Função para validar senha no login
+
+1.3 Registro de usuário
+- Endpoint POST /users/register
+- Validar email
+- Validar senha (tamanho mínimo)
+- Verificar duplicidade de email
+- Retornar dados do usuário sem a senha
+
+1.4 Login
+- Endpoint POST /users/login
+- Verificar email e senha
+- Gerar token de autenticação (JWT)
+- Retornar token e dados básicos do usuário
+
+1.5 Middleware de autenticação
+- Validar token JWT
+- Extrair usuário autenticado
+- Proteger rotas privadas
+
+-------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>FEITO
+
+2. Mudar de database SQLite para PostgreSQL
+2.1 Configuração do banco
+- Definir variáveis de ambiente:
+  DB_HOST
+  DB_PORT
+  DB_NAME
+  DB_USER
+  DB_PASSWORD
+
+2.2 Atualizar ORM/conexão
+- Alterar driver para PostgreSQL
+- Ajustar string de conexão
+- Verificar compatibilidade de tipos
+
+2.3 Migrações
+- Criar migrations para usuários
+- Criar migrations para eventos
+- Testar criação automática do schema
+
+2.4 Testes
+- Testar conexão local
+- Testar conexão via Docker
+- Ajustar logs de erro
+
+--------------------------------------------------
+
+3. Criar Docker para PostgreSQL
+3.1 Docker Compose
+- Criar docker-compose.yml
+- Serviço postgres
+- Definir imagem oficial
+- Expor porta
+- Definir variáveis de ambiente
+
+3.2 Persistência
+- Criar volume para dados do banco
+- Garantir que dados persistam após restart
+
+3.3 Integração com a aplicação
+- Ajustar host do banco para o nome do serviço
+- Garantir comunicação entre containers
+
+--------------------------------------------------
+
+4. CRUD de Usuário
+4.1 Criar usuário
+- POST /users
+- Criar usuário no sistema
+
+4.2 Listar usuários
+- GET /users
+- Paginação
+- Acesso restrito (admin)
+
+4.3 Buscar usuário por ID
+- GET /users/:id
+- Verificar permissão
+
+4.4 Atualizar usuário
+- PUT /users/:id
+- Atualizar nome, email e senha
+- Regerar hash de senha se necessário
+
+4.5 Deletar usuário
+- DELETE /users/:id
+- Usuário pode excluir a própria conta
+- Admin pode excluir qualquer usuário
+
+--------------------------------------------------
+
+5. CRUD de Eventos
+5.1 Modelagem de evento
+- Criar tabela/model Event
+- Campos:
+  id
+  title
+  description
+  date
+  location
+  user_id
+  created_at
+  updated_at
+
+5.2 Criar evento
+- POST /events
+- Associar evento ao usuário autenticado
+- Validar campos obrigatórios
+
+5.3 Listar eventos
+- GET /events
+- Listar todos ou apenas do usuário
+- Filtros por data ou título
+- Paginação
+
+5.4 Buscar evento por ID
+- GET /events/:id
+- Retornar detalhes completos
+
+5.5 Atualizar evento
+- PUT /events/:id
+- Apenas criador pode editar
+- Validar dados
+
+5.6 Deletar evento
+- DELETE /events/:id
+- Apenas criador ou admin
+
+--------------------------------------------------
+
+6. Tarefas adicionais
+- Padronizar respostas da API
+- Validação de dados de entrada
+- Logs de erros e requisições
+- Criar testes unitários
+- Criar testes de integração
+- Documentar API (Swagger/OpenAPI)
+
