@@ -7,13 +7,15 @@ from .schema import (
     Token ,
 
 )
+
+import  pandas as pd 
 from fastapi.security import OAuth2PasswordRequestForm
 from .geo import get_coordinates
-from .models  import Cidade, User 
+from .models  import Cidade, User , Clima 
 from sqlalchemy.orm import Session
 from sqlalchemy import select 
 from .database import get_session
-
+from .meteo import temperature 
 from fastapi import HTTPException
 from .security import (
     get_current_user,
@@ -21,8 +23,8 @@ from .security import (
     verify_password,
     create_access_token
 )
-
 from http import HTTPStatus
+from .meteo import temperature 
 
 app = FastAPI()
 
@@ -73,18 +75,38 @@ def create_user(user: UserSchema, session: Session = Depends(get_session)):
                                                                                                                                               
     return db_user
 
+
+
+
+
+def insert_temp_in_banco(dataframe,session : Session ):
+    print(dataframe.dtypes)
+    print(dataframe.info())
+    temperatura = dataframe['temperature_2m'].tolist()
+    data = dataframe['date'].tolist()
+    for i in range(len(temperatura)):
+        temp_obj = Clima(temperatura=float(temperatura[i]), data = data[i], id_cidade=1)
+        session.add(temp_obj) 
+
+    session.commit()
+
+        
+        
+
+
 @app.post("/add_cidade" , response_model=CidadePublic)                             
 def adiciona_cidade(cidade: CidadeSchema, session: Session = Depends(get_session),
                     current_user: User = Depends(get_current_user)):
-    #db_cidade = Cidade(cidade_nome =cidade.cidade_nome,lat = cidade.lat, long = cidade.long)
+    
     print(cidade)
     latitute,longitude  = get_coordinates(cidade.cidade_nome)
-    db_cidade = Cidade(cidade_nome=cidade.cidade_nome, lat=latitute, long=longitude) 
+    clima_db = temperature(latitute, longitude)
+    insert_temp_in_banco(clima_db,session) 
+    db_cidade = Cidade(cidade_nome=cidade.cidade_nome, lat=latitute, long=longitude,user_id = current_user.id)
     session.add(db_cidade)                                                                                                  
     session.commit()                                                                                                      
     session.refresh(db_cidade)                                                                                              
     return db_cidade
-
 
 @app.put("/up_cidade/{cidade_id}", response_model=CidadePublic)
 def update_cidade(

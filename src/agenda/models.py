@@ -4,6 +4,7 @@ from sqlalchemy.orm import (
     Mapped, mapped_as_dataclass, registry, mapped_column, relationship
 )
 from sqlalchemy import func, ForeignKey
+from sqlalchemy import DateTime
 
 table_registry = registry()
 
@@ -57,8 +58,25 @@ class Cidade:
     cidade_nome : Mapped[str]  
     lat : Mapped[float]
     long : Mapped[float]
-                                                                           
-                                                                           
+    Clima: Mapped[list['Clima']] = relationship(   
+         init=False,                                 
+         cascade='all, delete-orphan',               
+         lazy='selectin',                            
+     )                                               
+
+
+
+
+@mapped_as_dataclass(table_registry)
+class Clima:
+    __tablename__ = "Clima"
+    id_clima : Mapped[int] = mapped_column (init = False , primary_key=True)
+    id_cidade: Mapped[int] = mapped_column(ForeignKey("Cidade.id_cidade"), nullable=False)
+    data : Mapped[datetime]
+    temperatura: Mapped[float]
+
+
+    
                                                                            
                                                                            
 

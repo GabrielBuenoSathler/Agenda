@@ -1,5 +1,5 @@
 import openmeteo_requests
-from geo import get_coordinates
+from .geo import get_coordinates
 import pandas as pd
 import requests_cache
 from retry_requests import retry
@@ -9,9 +9,6 @@ cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
 
-lat_long = get_coordinates("Paris")
-lat = lat_long[0]
-long = lat_long[1]
 def temperature(lat,long):
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
@@ -53,13 +50,7 @@ def temperature(lat,long):
     hourly_dataframe = pd.DataFrame(data = hourly_data)
 #last_hour = hourly_dataframe.iloc[[-1]]
     print("\nHourly data\n",hourly_dataframe)
-
-
-
-print(type(lat), lat)
-print(type(long), long)
-
-temperature(lat,long)
+    return hourly_dataframe
 
 
 
