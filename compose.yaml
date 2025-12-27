@@ -1,0 +1,36 @@
+services:
+  agenda_database:
+    image: postgres:17
+    container_name: agenda_database
+    networks:
+      - agenda_net
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_DB: app_db
+      POSTGRES_PASSWORD: app_password
+    ports:
+      - "5433:5432"
+
+  agenda_app:
+    entrypoint: ./entrypoint.sh
+    build: .
+    image: agenda_app
+    container_name: agenda_app
+    networks:
+      - agenda_net
+    ports:
+      - "8000:8000"
+    depends_on:
+      agenda_database:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+psycopg://app_user:app_password@agenda_database:5432/app_db
+
+networks:
+  agenda_net:
+
+volumes:
+  pgdata:
+
